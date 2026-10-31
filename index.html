@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAG - Music & Video Downloader</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .gold-glow { box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+        .red-glow { box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); }
+        .blue-glow { box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col font-sans border-t-4 border-yellow-400">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <!-- Logótipo TAG -->
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-red-600 via-yellow-400 to-blue-500 flex items-center justify-center font-black text-xl text-slate-950 gold-glow">
+                    TAG
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg leading-tight bg-gradient-to-r from-red-500 via-yellow-400 to-blue-400 bg-clip-text text-transparent">
+                        TAG Music
+                    </h1>
+                    <p class="text-[10px] text-slate-400 tracking-wider">MP3 & MP4 DOWNLOADER</p>
+                </div>
+            </div>
+
+            <!-- Crétidos do Criador -->
+            <div class="text-right text-xs">
+                <span class="text-slate-400">Desenvolvido por</span>
+                <p class="font-bold text-yellow-400">Tiago Junior</p>
+                <span class="text-[9px] text-blue-400 font-semibold block">Thi.AG studio</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-1 max-w-4xl w-full mx-auto p-4 space-y-6">
+
+        <!-- Caixas de Pesquisa e URL -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+            <div class="absolute bottom-0 left-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
+
+            <h2 class="text-base font-bold text-slate-200 mb-3 flex items-center gap-2">
+                <i data-lucide="link" class="w-5 h-5 text-yellow-400"></i>
+                Baixar Músicas e Vídeos (YouTube, Spotify, Web)
+            </h2>
+
+            <div class="flex flex-col md:flex-row gap-3">
+                <input type="url" id="urlInput" placeholder="Cole o URL da música ou vídeo (YouTube, Spotify, etc.)" 
+                       class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400 text-white placeholder-slate-500">
+                
+                <div class="flex gap-2">
+                    <button onclick="baixarMedia('mp3')" class="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition red-glow">
+                        <i data-lucide="music" class="w-4 h-4"></i> Baixar MP3
+                    </button>
+                    <button onclick="baixarMedia('mp4')" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition blue-glow">
+                        <i data-lucide="video" class="w-4 h-4"></i> Baixar MP4
+                    </button>
+                </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Suporta links diretos, pesquisas na web ou integração com APIs de extração.</p>
+        </section>
+
+        <!-- Reprodutor de Media Integrado -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+            <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2">
+                <i data-lucide="play-circle" class="w-4 h-4 text-blue-400"></i> Reprodutor Integrado
+            </h3>
+
+            <!-- Ecrã / Player de Vídeo/Áudio -->
+            <div class="bg-slate-950 rounded-xl overflow-hidden mb-4 border border-slate-800 flex flex-col items-center justify-center min-h-[200px] relative">
+                <video id="videoPlayer" class="w-full max-h-[300px] hidden" controls></video>
+                <div id="audioVisual" class="flex flex-col items-center justify-center p-6 text-center">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-red-500 to-yellow-400 flex items-center justify-center mb-3 gold-glow">
+                        <i data-lucide="disc" class="w-10 h-10 text-slate-950 animate-spin" style="animation-duration: 8s;"></i>
+                    </div>
+                    <h4 id="currentTitle" class="font-bold text-lg text-white">Nenhuma faixa em reprodução</h4>
+                    <p id="currentArtist" class="text-xs text-slate-400">Thi.AG studio Player</p>
+                </div>
+                <audio id="audioPlayer" class="w-full p-2 bg-slate-900"></audio>
+            </div>
+        </section>
+
+        <!-- Notificação Toast -->
+        <div id="toast" class="hidden fixed bottom-6 right-6 bg-slate-900 border border-yellow-400 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-50">
+            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-400"></i>
+            <span id="toastMsg" class="text-sm">Processando...</span>
+        </div>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="bg-slate-900 border-t border-slate-800 p-4 text-center text-xs text-slate-500">
+        <p>Criado por <strong class="text-yellow-400">Tiago Junior</strong> nos <strong class="text-blue-400">Thi.AG studio</strong></p>
+        <p class="text-[10px] text-slate-600 mt-1">© 2026 TAG - Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Inicializar Ícones
+        lucide.createIcons();
+
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = mensagem;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function baixarMedia(formato) {
+            const url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                mostrarToast('Por favor, cole um URL válido do YouTube, Spotify ou Web!');
+                return;
+            }
+
+            mostrarToast(`A processar download em formato ${formato.toUpperCase()}...`);
+
+            // Para integrar com uma API real de conversão/download:
+            // Exemplo: reencaminhar para uma API gratuita como o Cobalt API
+            const apiEndpoint = `https://api.cobalt.tools/api/json`; 
+            
+            // Simulação de download seguro para o utilizador
+            setTimeout(() => {
+                mostrarToast(`Download preparado! A iniciar extração de ${formato.toUpperCase()}...`);
+                // Criação do link de teste/download
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.click();
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
